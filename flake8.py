@@ -17,7 +17,7 @@ try:
 except ImportError:
     StandardReport = None
 
-from SublimeLinter.lint import PythonLinter
+from SublimeLinter.lint import persist, PythonLinter
 
 
 if StandardReport is not None:
@@ -60,6 +60,7 @@ class Flake8(PythonLinter):
     inline_settings = ('max-line-length', 'max-complexity')
     inline_overrides = ('select', 'ignore')
     module = 'flake8.engine'
+    check_version = True
 
     def check(self, code, filename):
         """Run flake8 on code and return the output."""
@@ -76,6 +77,9 @@ class Flake8(PythonLinter):
         }
 
         self.build_options(options, type_map, transform=lambda s: s.replace('-', '_'))
+
+        if persist.settings.get('debug'):
+            persist.printf('{} options: {}'.format(self.name, options))
 
         checker = self.module.get_style_guide(**options)
 
