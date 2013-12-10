@@ -49,7 +49,11 @@ class Flake8(PythonLinter):
 
     language = 'python'
     cmd = ('flake8@python', '*', '-')
-    regex = r'^.+?:(?P<line>\d+):(?P<col>\d+): (?:(?P<error>[EF])|(?P<warning>[WCN]))\d+ (?P<message>.+)'
+    regex = (
+        r'^.+?:(?P<line>\d+):(?P<col>\d+): '
+        r'(?:(?P<error>[EF])|(?P<warning>[WCN]))\d+ '
+        r'(?P<message>.+)'
+    )
     multiline = True
     defaults = {
         '--select=,': "",
