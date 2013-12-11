@@ -56,8 +56,8 @@ class Flake8(PythonLinter):
     )
     multiline = True
     defaults = {
-        '--select=,': "",
-        '--ignore=,': "",
+        '--select=,': '',
+        '--ignore=,': '',
         '--max-line-length=': None,
         '--max-complexity=': -1
     }
