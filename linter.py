@@ -48,7 +48,7 @@ class Flake8(PythonLinter):
 
     """Provides an interface to the flake8 python module/script."""
 
-    language = 'python'
+    syntax = 'python'
     cmd = ('flake8@python', '*', '-')
     regex = (
         r'^.+?:(?P<line>\d+):(?P<col>\d+): '
