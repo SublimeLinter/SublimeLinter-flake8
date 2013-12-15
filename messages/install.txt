@@ -1,0 +1,6 @@
+SublimeLinter-flake8
+-------------------------------
+
+This linter plugin for SublimeLinter provides an interface to flake8.
+
+For more information, please see https://github.com/SublimeLinter/SublimeLinter-flake8.
