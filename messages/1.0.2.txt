@@ -1,0 +1,8 @@
+SublimeLinter-flake8 1.0.2
+---------------------------
+
+Please note that using null for max-line-length does NOT
+disable max-line-length, but uses the PEP8 default of 79.
+
+To disable max-line-length completely, add "E501" to the
+"ignore" setting.
