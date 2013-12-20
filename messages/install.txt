@@ -2,9 +2,9 @@ SublimeLinter-flake8
 -------------------------------
 This linter plugin for SublimeLinter provides an interface to flake8.
 
-INSTALLATION
-------------
-Before this plugin will activate, you *must* follow the installation
-instructions here:
+** IMPORTANT! **
+
+Before this plugin will activate, you *must*
+follow the installation instructions here:
 
 https://github.com/SublimeLinter/SublimeLinter-flake8
