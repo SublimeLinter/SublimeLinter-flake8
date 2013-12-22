@@ -11,7 +11,7 @@
 """This module exports the Flake8 plugin linter class."""
 
 import os
-from SublimeLinter.lint import persist, PythonLinter, util
+from SublimeLinter.lint import persist, PythonLinter
 
 
 class Flake8(PythonLinter):
@@ -23,10 +23,9 @@ class Flake8(PythonLinter):
     regex = (
         r'^.+?:(?P<line>\d+):(?P<col>\d+): '
         r'(?:(?P<error>[EF])|(?P<warning>[WCN]))\d+ '
-        r'(?P<message>.+)'
+        r'(?P<message>(?P<near>\'.+\') imported but unused|.*)'
     )
     multiline = True
-    error_stream = util.STREAM_BOTH
     defaults = {
         '--select=,': '',
         '--ignore=,': '',
@@ -66,6 +65,22 @@ class Flake8(PythonLinter):
             filename=os.path.basename(filename),
             lines=code.splitlines(keepends=True)
         )
+
+    def split_match(self, match):
+        """
+        Extract and return values from match.
+
+        We override this method because sometimes we capture near,
+        and a column will always override near.
+
+        """
+
+        match, line, col, error, warning, message, near = super().split_match(match)
+
+        if near:
+            col = None
+
+        return match, line, col, error, warning, message, near
 
     def get_report(self):
         """Return the Report class for use by flake8."""
