@@ -56,7 +56,7 @@ class Flake8(PythonLinter):
 
         self.build_options(options, type_map, transform=lambda s: s.replace('-', '_'))
 
-        if persist.settings.get('debug'):
+        if persist.debug_mode():
             persist.printf('{} options: {}'.format(self.name, options))
 
         checker = self.module.get_style_guide(**options)
