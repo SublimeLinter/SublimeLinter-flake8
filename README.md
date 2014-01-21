@@ -42,8 +42,9 @@ In addition to the standard SublimeLinter settings, SublimeLinter-flake8 provide
 |Setting|Description|Inline Setting|Inline Override|
 |:------|:----------|:------------:|:-------------:|
 |@python|A meta setting that indicates the [python version](http://sublimelinter.readthedocs.org/en/latest/meta_settings.html#python) of your source files. Use this inline or at the global level, not within the linter’s settings.|&#10003;| |
-|ignore|A comma-separated list of error codes to ignore| |&#10003;|
 |select|A comma-separated list of error codes to select, overrides ignore| |&#10003;|
+|ignore|A comma-separated list of error codes to ignore| |&#10003;|
+|builtins|A comma-separated string with external names that should be considered defined (e.g. "foo,bar")| |&#10003;|
 |max-line-length|The maximum allowed line length. `null` uses the PEP8 default of 79.|&#10003;| |
 |max-complexity|The maximum allowed code complexity. -1 allows unlimited complexity.|&#10003;| |
 

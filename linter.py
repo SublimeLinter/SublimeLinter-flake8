@@ -29,16 +29,49 @@ class Flake8(PythonLinter):
     defaults = {
         '--select=,': '',
         '--ignore=,': '',
+        '--builtins=,': '',
         '--max-line-length=': None,
         '--max-complexity=': -1
     }
     inline_settings = ('max-line-length', 'max-complexity')
-    inline_overrides = ('select', 'ignore')
+    inline_overrides = ('select', 'ignore', 'builtins')
     module = 'flake8.engine'
     check_version = True
 
     # Internal
     report = None
+    pyflakes_checker_module = None
+    pyflakes_checker_class = None
+
+    @classmethod
+    def initialize(cls):
+        """Initialize the class after plugin load."""
+
+        super().initialize()
+
+        if cls.module is None:
+            return
+
+        # This is tricky. Unfortunately pyflakes chooses to store
+        # builtins in a class variable and union that with the builtins option
+        # on every execution. This results in the builtins never being removed.
+        # To fix that, we get a reference to the pyflakes.checker module and
+        # pyflakes.checker.Checker class used by flake8. We can then reset
+        # the Checker.builtIns class variable on each execution.
+
+        try:
+            from pkg_resources import iter_entry_points
+        except ImportError:
+            pass
+        else:
+            for entry in iter_entry_points('flake8.extension'):
+                check = entry.load()
+
+                if check.name == 'pyflakes':
+                    from pyflakes import checker
+                    cls.pyflakes_checker_module = checker
+                    cls.pyflakes_checker_class = check
+                    break
 
     def check(self, code, filename):
         """Run flake8 on code and return the output."""
@@ -50,6 +83,7 @@ class Flake8(PythonLinter):
         type_map = {
             'select': [],
             'ignore': [],
+            'builtins': '',
             'max-line-length': 0,
             'max-complexity': 0
         }
@@ -59,9 +93,14 @@ class Flake8(PythonLinter):
         if persist.debug_mode():
             persist.printf('{} options: {}'.format(self.name, options))
 
-        checker = self.module.get_style_guide(**options)
+        if self.pyflakes_checker_class is not None:
+            # Reset the builtins to the initial value used by pyflakes.
+            builtins = set(self.pyflakes_checker_module.builtin_vars).union(self.pyflakes_checker_module._MAGIC_GLOBALS)
+            self.pyflakes_checker_class.builtIns = builtins
 
-        return checker.input_file(
+        linter = self.module.get_style_guide(**options)
+
+        return linter.input_file(
             filename=os.path.basename(filename),
             lines=code.splitlines(keepends=True)
         )
