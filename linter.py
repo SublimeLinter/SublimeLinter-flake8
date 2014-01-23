@@ -20,6 +20,9 @@ class Flake8(PythonLinter):
 
     syntax = ('python', 'python django')
     cmd = ('flake8@python', '*', '-')
+    version_args = '--version'
+    version_re = r'^(?P<version>\d+\.\d+\.\d+)'
+    version_requirement = '>= 2.1'
     regex = (
         r'^.+?:(?P<line>\d+):(?P<col>\d+): '
         r'(?:(?P<error>[EF])|(?P<warning>[WCN]))\d+ '

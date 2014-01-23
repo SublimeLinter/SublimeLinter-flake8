@@ -20,6 +20,8 @@ Before installing this plugin, you must ensure that `flake8` is installed on you
    [sudo] pip-3.x install flake8
    ```
 
+**Note:** This plugin requires `flake8` 2.1 or later.
+
 ### Linter configuration
 In order for `flake8` to be executed by SublimeLinter, you must ensure that its path is available to SublimeLinter. Before going any further, please read and follow the steps in [“Finding a linter executable”](http://sublimelinter.readthedocs.org/en/latest/troubleshooting.html#finding-a-linter-executable) through “Validating your PATH” in the documentation.
 
