@@ -1,6 +1,8 @@
 SublimeLinter-flake8
 =========================
 
+[![Build Status](https://khancdn.eu/badges.php?service=https%3A%2F%2Ftravis-ci.org%2FSublimeLinter%2FSublimeLinter-flake8.png%3Fbranch%3Dmaster)](https://travis-ci.org/SublimeLinter/SublimeLinter-flake8)
+
 This linter plugin for [SublimeLinter](http://sublimelinter.readthedocs.org) provides an interface to [flake8](http://flake8.readthedocs.org/en/latest/). It will be used with files that have the “Python” syntax.
 
 ## Installation
