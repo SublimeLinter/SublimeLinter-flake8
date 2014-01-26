@@ -23,11 +23,24 @@ class Flake8(PythonLinter):
     version_args = '--version'
     version_re = r'^(?P<version>\d+\.\d+\.\d+)'
     version_requirement = '>= 2.1'
+    _flake8_errors = (
+        'F402',
+        'F404',
+        'F812',
+        'F823',
+        'F831',
+        'F821',
+        'F822',
+        'E112',
+        'E113',
+        'E901',
+        'E902',
+        )
     regex = (
         r'^.+?:(?P<line>\d+):(?P<col>\d+): '
-        r'(?:(?P<error>[EF])|(?P<warning>[WCN]))\d+ '
+        r'(?:(?P<error>%s)|(?P<warning>([FEWCN]\d+))) '
         r'(?P<message>(?P<near>\'.+\') imported but unused|.*)'
-    )
+    ) % '|'.join(_flake8_errors)
     multiline = True
     defaults = {
         '--select=,': '',
