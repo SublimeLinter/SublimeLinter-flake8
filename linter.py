@@ -44,7 +44,7 @@ class Flake8(PythonLinter):
 
     regex = (
         r'^.+?:(?P<line>\d+):(?P<col>\d+): '
-        r'(?:(?P<error>[FEWCN](?:40[24]|812|8(2[1-3]|31)|11[23]|90[12]))|'
+        r'(?:(?P<error>(?:F(?:40[24]|8(?:12|2[123]|31))|E(?:11[23]|90[12])))|'
         r'(?P<warning>[FEWCN]\d+)) '
         r'(?P<message>(?P<near>\'.+\') imported but unused|.*)'
     )
