@@ -23,24 +23,31 @@ class Flake8(PythonLinter):
     version_args = '--version'
     version_re = r'^(?P<version>\d+\.\d+\.\d+)'
     version_requirement = '>= 2.1'
-    _flake8_errors = (
-        'F402',
-        'F404',
-        'F812',
-        'F823',
-        'F831',
-        'F821',
-        'F822',
-        'E112',
-        'E113',
-        'E901',
-        'E902',
-        )
+
+    # The following regex marks these pyflakes and pep8 codes as errors.
+    # All other codes are marked as warnings.
+    #
+    # Pyflake Errors:
+    #  - F402 import module from line N shadowed by loop variable
+    #  - F404 future import(s) name after other statements
+    #  - F812 list comprehension redefines name from line N
+    #  - F823 local variable name ... referenced before assignment
+    #  - F831 duplicate argument name in function definition
+    #  - F821 undefined name name
+    #  - F822 undefined name name in __all__
+    #
+    # Pep8 Errors:
+    #  - E112 expected an indented block
+    #  - E113 unexpected indentation
+    #  - E901 SyntaxError or IndentationError
+    #  - E902 IOError
+
     regex = (
         r'^.+?:(?P<line>\d+):(?P<col>\d+): '
-        r'(?:(?P<error>%s)|(?P<warning>([FEWCN]\d+))) '
+        r'(?:(?P<error>[FEWCN](?:40[24]|812|8(2[1-3]|31)|11[23]|90[12]))|'
+        r'(?P<warning>[FEWCN]\d+)) '
         r'(?P<message>(?P<near>\'.+\') imported but unused|.*)'
-    ) % '|'.join(_flake8_errors)
+    )
     multiline = True
     defaults = {
         '--select=,': '',
