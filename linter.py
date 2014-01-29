@@ -85,7 +85,7 @@ class Flake8(PythonLinter):
         try:
             from pkg_resources import iter_entry_points
         except ImportError:
-            pass
+            persist.printf('WARNING: {} could not import pkg_resources.iter_entry_points'.format(cls.name))
         else:
             for entry in iter_entry_points('flake8.extension'):
                 check = entry.load()
