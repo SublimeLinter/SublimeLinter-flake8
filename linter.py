@@ -100,7 +100,8 @@ class Flake8(PythonLinter):
         """Run flake8 on code and return the output."""
 
         options = {
-            'reporter': self.get_report()
+            'reporter': self.get_report(),
+            'jobs': 1   # No multiprocessing
         }
 
         type_map = {
