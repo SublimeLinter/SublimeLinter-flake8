@@ -22,7 +22,7 @@ class Flake8(PythonLinter):
     cmd = ('flake8@python', '*', '-')
     version_args = '--version'
     version_re = r'^(?P<version>\d+\.\d+\.\d+)'
-    version_requirement = '>= 2.1'
+    version_requirement = '>= 2.2.2'
 
     # The following regex marks these pyflakes and pep8 codes as errors.
     # All other codes are marked as warnings.
@@ -100,8 +100,7 @@ class Flake8(PythonLinter):
         """Run flake8 on code and return the output."""
 
         options = {
-            'reporter': self.get_report(),
-            'jobs': 1   # No multiprocessing
+            'reporter': self.get_report()
         }
 
         type_map = {
