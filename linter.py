@@ -54,7 +54,8 @@ class Flake8(PythonLinter):
         '--ignore=,': '',
         '--builtins=,': '',
         '--max-line-length=': None,
-        '--max-complexity=': -1
+        '--max-complexity=': -1,
+        '--jobs=': '1'
     }
     inline_settings = ('max-line-length', 'max-complexity')
     inline_overrides = ('select', 'ignore', 'builtins')
