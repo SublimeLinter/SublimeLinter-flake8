@@ -55,7 +55,8 @@ class Flake8(PythonLinter):
         '--builtins=,': '',
         '--max-line-length=': None,
         '--max-complexity=': -1,
-        '--jobs=': '1'
+        '--jobs=': '1',
+        '--show-code=': False,
     }
     inline_settings = ('max-line-length', 'max-complexity')
     inline_overrides = ('select', 'ignore', 'builtins')
@@ -64,6 +65,7 @@ class Flake8(PythonLinter):
 
     # Internal
     report = None
+    show_code = False
     pyflakes_checker_module = None
     pyflakes_checker_class = None
 
@@ -110,10 +112,12 @@ class Flake8(PythonLinter):
             'ignore': [],
             'builtins': '',
             'max-line-length': 0,
-            'max-complexity': 0
+            'max-complexity': 0,
+            'show-code': False,
         }
 
         self.build_options(options, type_map, transform=lambda s: s.replace('-', '_'))
+        self.show_code = options.pop('show_code', False)
 
         if persist.debug_mode():
             persist.printf('{} options: {}'.format(self.name, options))
@@ -144,6 +148,8 @@ class Flake8(PythonLinter):
         if near:
             col = None
 
+        if self.show_code:
+            message = ' '.join([error or warning or '', message])
         return match, line, col, error, warning, message, near
 
     def get_report(self):
