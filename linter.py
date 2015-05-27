@@ -45,7 +45,7 @@ class Flake8(PythonLinter):
     regex = (
         r'^.+?:(?P<line>\d+):(?P<col>\d+): '
         r'(?:(?P<error>(?:F(?:40[24]|8(?:12|2[123]|31))|E(?:11[23]|90[12])))|'
-        r'(?P<warning>[FEWCND]\d+)) '
+        r'(?P<warning>\w\d+)) '
         r'(?P<message>(?P<near>\'.+\') imported but unused|.*)'
     )
     multiline = True
