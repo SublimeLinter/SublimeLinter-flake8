@@ -56,9 +56,9 @@ class Flake8(PythonLinter):
         '--max-line-length=': None,
         '--max-complexity=': -1,
         '--jobs=': '1',
-        '--show-code=': False,
+        '--show-code=': False
     }
-    inline_settings = ('max-line-length', 'max-complexity')
+    inline_settings = ('max-line-length', 'max-complexity', 'show_code')
     inline_overrides = ('select', 'ignore', 'builtins')
     module = 'flake8.engine'
     check_version = True
@@ -113,7 +113,7 @@ class Flake8(PythonLinter):
             'builtins': '',
             'max-line-length': 0,
             'max-complexity': 0,
-            'show-code': False,
+            'show-code': False
         }
 
         self.build_options(options, type_map, transform=lambda s: s.replace('-', '_'))
