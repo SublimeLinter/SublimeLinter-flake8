@@ -51,6 +51,7 @@ In addition to the standard SublimeLinter settings, SublimeLinter-flake8 provide
 |builtins|A comma-separated string with external names that should be considered defined (e.g. "foo,bar")| |&#10003;|
 |max-line-length|The maximum allowed line length. `null` uses the PEP8 default of 79.|&#10003;| |
 |max-complexity|The maximum allowed code complexity. -1 allows unlimited complexity.|&#10003;| |
+|show-code|Displays the flake8 error code in the message, `False` by default.|&#10003;| |
 
 ## Contributing
 If you would like to contribute enhancements or fixes, please do the following:
