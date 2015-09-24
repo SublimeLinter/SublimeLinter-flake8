@@ -86,18 +86,23 @@ class Flake8(PythonLinter):
         # the Checker.builtIns class variable on each execution.
 
         try:
-            from pkg_resources import iter_entry_points
+            from pkg_resources import iter_entry_points, VersionConflict
         except ImportError:
             persist.printf('WARNING: {} could not import pkg_resources.iter_entry_points'.format(cls.name))
         else:
             for entry in iter_entry_points('flake8.extension'):
-                check = entry.load()
+                try:
+                    check = entry.load()
+                except VersionConflict as e:
+                    persist.printf('WARNING: Version Conflict %s' % e)
+                else:
 
-                if check.name == 'pyflakes':
-                    from pyflakes import checker
-                    cls.pyflakes_checker_module = checker
-                    cls.pyflakes_checker_class = check
-                    break
+                    if check.name == 'pyflakes':
+                        persist.printf('INFO: PyFlakes found')
+                        from pyflakes import checker
+                        cls.pyflakes_checker_module = checker
+                        cls.pyflakes_checker_class = check
+                        break
 
     def check(self, code, filename):
         """Run flake8 on code and return the output."""
