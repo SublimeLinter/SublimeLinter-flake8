@@ -15,7 +15,6 @@ from SublimeLinter.lint import persist, PythonLinter
 
 
 class Flake8(PythonLinter):
-
     """Provides an interface to the flake8 python module/script."""
 
     syntax = 'python'
@@ -50,15 +49,15 @@ class Flake8(PythonLinter):
     )
     multiline = True
     defaults = {
+        'show-code': False,
         '--select=,': '',
         '--ignore=,': '',
         '--builtins=,': '',
         '--max-line-length=': None,
         '--max-complexity=': -1,
-        '--jobs=': '1',
-        '--show-code=': False
+        '--jobs=': '1'
     }
-    inline_settings = ('max-line-length', 'max-complexity', 'show_code')
+    inline_settings = ('max-line-length', 'max-complexity', 'show-code')
     inline_overrides = ('select', 'ignore', 'builtins')
     module = 'flake8.engine'
     check_version = True
@@ -99,8 +98,12 @@ class Flake8(PythonLinter):
                     cls.pyflakes_checker_class = check
                     break
 
-    def check(self, code, filename):
-        """Run flake8 on code and return the output."""
+    def run(self, cmd, code):
+        """
+        Run the module checker or executable on code and return the output.
+
+        We override this method to handle show_code option.
+        """
 
         options = {
             'reporter': self.get_report(),
@@ -108,26 +111,33 @@ class Flake8(PythonLinter):
         }
 
         type_map = {
+            'show-code': False,
             'select': [],
             'ignore': [],
             'builtins': '',
             'max-line-length': 0,
-            'max-complexity': 0,
-            'show-code': False
+            'max-complexity': 0
         }
 
         self.build_options(options, type_map, transform=lambda s: s.replace('-', '_'))
-        self.show_code = options.pop('show_code', False)
 
         if persist.debug_mode():
             persist.printf('{} options: {}'.format(self.name, options))
+
+        self.show_code = options.pop('show_code', False)
+        self.linter_options = options
+
+        return super().run(cmd, code)
+
+    def check(self, code, filename):
+        """Run flake8 on code and return the output."""
 
         if self.pyflakes_checker_class is not None:
             # Reset the builtins to the initial value used by pyflakes.
             builtins = set(self.pyflakes_checker_module.builtin_vars).union(self.pyflakes_checker_module._MAGIC_GLOBALS)
             self.pyflakes_checker_class.builtIns = builtins
 
-        linter = self.module.get_style_guide(**options)
+        linter = self.module.get_style_guide(**self.linter_options)
 
         return linter.input_file(
             filename=os.path.basename(filename),
@@ -150,6 +160,7 @@ class Flake8(PythonLinter):
 
         if self.show_code:
             message = ' '.join([error or warning or '', message])
+
         return match, line, col, error, warning, message, near
 
     def get_report(self):
@@ -158,7 +169,6 @@ class Flake8(PythonLinter):
             from pep8 import StandardReport
 
             class Report(StandardReport):
-
                 """Provides a report in the form of a single multiline string, without printing."""
 
                 def get_file_results(self):
