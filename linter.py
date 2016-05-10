@@ -11,8 +11,7 @@
 
 """This module exports the Flake8 plugin linter class."""
 
-import os
-from SublimeLinter.lint import persist, PythonLinter
+from SublimeLinter.lint import PythonLinter
 
 
 class Flake8(PythonLinter):
@@ -56,83 +55,11 @@ class Flake8(PythonLinter):
         '--max-line-length=': None,
         '--max-complexity=': -1,
         '--jobs=': '1',
-        '--show-code=': False
+        'show-code': False,
+        'executable': ''
     }
-    inline_settings = ('max-line-length', 'max-complexity', 'show_code')
+    inline_settings = ('max-line-length', 'max-complexity')
     inline_overrides = ('select', 'ignore', 'builtins')
-    module = 'flake8.engine'
-    check_version = True
-
-    # Internal
-    report = None
-    show_code = False
-    pyflakes_checker_module = None
-    pyflakes_checker_class = None
-
-    @classmethod
-    def initialize(cls):
-        """Initialize the class after plugin load."""
-
-        super().initialize()
-
-        if cls.module is None:
-            return
-
-        # This is tricky. Unfortunately pyflakes chooses to store
-        # builtins in a class variable and union that with the builtins option
-        # on every execution. This results in the builtins never being removed.
-        # To fix that, we get a reference to the pyflakes.checker module and
-        # pyflakes.checker.Checker class used by flake8. We can then reset
-        # the Checker.builtIns class variable on each execution.
-
-        try:
-            from pkg_resources import iter_entry_points
-        except ImportError:
-            persist.printf('WARNING: {} could not import pkg_resources.iter_entry_points'.format(cls.name))
-        else:
-            for entry in iter_entry_points('flake8.extension'):
-                check = entry.load()
-
-                if check.name == 'pyflakes':
-                    from pyflakes import checker
-                    cls.pyflakes_checker_module = checker
-                    cls.pyflakes_checker_class = check
-                    break
-
-    def check(self, code, filename):
-        """Run flake8 on code and return the output."""
-
-        options = {
-            'reporter': self.get_report(),
-            'jobs': '1'   # No multiprocessing
-        }
-
-        type_map = {
-            'select': [],
-            'ignore': [],
-            'builtins': '',
-            'max-line-length': 0,
-            'max-complexity': 0,
-            'show-code': False
-        }
-
-        self.build_options(options, type_map, transform=lambda s: s.replace('-', '_'))
-        self.show_code = options.pop('show_code', False)
-
-        if persist.debug_mode():
-            persist.printf('{} options: {}'.format(self.name, options))
-
-        if self.pyflakes_checker_class is not None:
-            # Reset the builtins to the initial value used by pyflakes.
-            builtins = set(self.pyflakes_checker_module.builtin_vars).union(self.pyflakes_checker_module._MAGIC_GLOBALS)
-            self.pyflakes_checker_class.builtIns = builtins
-
-        linter = self.module.get_style_guide(**options)
-
-        return linter.input_file(
-            filename=os.path.basename(filename),
-            lines=code.splitlines(keepends=True)
-        )
 
     def split_match(self, match):
         """
@@ -148,34 +75,17 @@ class Flake8(PythonLinter):
         if near:
             col = None
 
-        if self.show_code:
+        if self.get_view_settings().get('show-code'):
             message = ' '.join([error or warning or '', message])
         return match, line, col, error, warning, message, near
 
-    def get_report(self):
-        """Return the Report class for use by flake8."""
-        if self.report is None:
-            from pep8 import StandardReport
+    def build_cmd(self, cmd=None):
+        """Return a tuple with the command line to execute."""
 
-            class Report(StandardReport):
-                """Provides a report in the form of a single multiline string, without printing."""
-
-                def get_file_results(self):
-                    """Collect and return the results for this file."""
-                    self._deferred_print.sort()
-                    results = ''
-
-                    for line_number, offset, code, text, doc in self._deferred_print:
-                        results += '{path}:{row}:{col}: {code} {text}\n'.format_map({
-                            'path': self.filename,
-                            'row': self.line_offset + line_number,
-                            'col': offset + 1,
-                            'code': code,
-                            'text': text
-                        })
-
-                    return results
-
-            self.__class__.report = Report
-
-        return self.report
+        executable = self.get_view_settings().get('executable', None)
+        if executable:
+            args = (cmd or self.cmd)[1:]
+            cmd = (executable, ) + args
+            return self.insert_args(cmd)
+        else:
+            return super().build_cmd(cmd)
