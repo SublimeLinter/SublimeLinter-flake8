@@ -3,7 +3,8 @@
 # Linter for SublimeLinter3, a code checking framework for Sublime Text 3
 #
 # Written by Aparajita Fishman
-# Copyright (c) 2015 The SublimeLinter Community
+# Copyright (c) 2013-2014 Aparajita Fishman
+# Copyright (c) 2015-2016 The SublimeLinter Community
 #
 # License: MIT
 #
@@ -15,7 +16,6 @@ from SublimeLinter.lint import persist, PythonLinter
 
 
 class Flake8(PythonLinter):
-
     """Provides an interface to the flake8 python module/script."""
 
     syntax = 'python'
@@ -158,7 +158,6 @@ class Flake8(PythonLinter):
             from pep8 import StandardReport
 
             class Report(StandardReport):
-
                 """Provides a report in the form of a single multiline string, without printing."""
 
                 def get_file_results(self):
