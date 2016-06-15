@@ -18,7 +18,7 @@ class Flake8(PythonLinter):
     """Provides an interface to the flake8 python module/script."""
 
     syntax = 'python'
-    cmd = ('flake8@python', '*', '-')
+    cmd = ('flake8', '*', '-')
     version_args = '--version'
     version_re = r'^(?P<version>\d+\.\d+\.\d+)'
     version_requirement = '>= 2.2.2'
