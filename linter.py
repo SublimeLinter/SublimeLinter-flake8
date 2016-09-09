@@ -17,7 +17,7 @@ from SublimeLinter.lint import PythonLinter
 class Flake8(PythonLinter):
     """Provides an interface to the flake8 python module/script."""
 
-    syntax = 'python'
+    syntax = ('python', 'python3')
     cmd = ('flake8', '*', '-')
     version_args = '--version'
     version_re = r'^(?P<version>\d+\.\d+\.\d+)'
