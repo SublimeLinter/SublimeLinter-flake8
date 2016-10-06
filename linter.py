@@ -61,6 +61,10 @@ class Flake8(PythonLinter):
     inline_settings = ('max-line-length', 'max-complexity')
     inline_overrides = ('select', 'ignore', 'builtins')
 
+    # ST will not show error marks in whitespace errors, so bump the column by one
+    # e.g. `E203 whitespace before ':'`
+    increment_col = ('E203',)
+
     def split_match(self, match):
         """
         Extract and return values from match.
@@ -74,6 +78,9 @@ class Flake8(PythonLinter):
 
         if near:
             col = None
+
+        if col and any(c in self.increment_col for c in (error, warning)):
+            col += 1
 
         if self.get_view_settings().get('show-code'):
             message = ' '.join([error or warning or '', message])
