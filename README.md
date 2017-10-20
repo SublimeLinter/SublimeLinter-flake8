@@ -11,15 +11,15 @@ SublimeLinter 3 must be installed in order to use this plugin. If SublimeLinter 
 ### Linter installation
 Before installing this plugin, you must ensure that `flake8` is installed on your system. To install `flake8`, do the following:
 
-1. Install [Python](http://python.org) and [pip](http://www.pip-installer.org/en/latest/installing.html). If you plan to code in Python 3, you will need to install `pip` for Python 3 as well.
+1. Install [Python](http://python.org) and [pip](http://www.pip-installer.org/en/latest/installing.html) (Python 3 requires pip3).
 
-1. Install `flake8` by typing the following in a terminal, replacing ‘x’ with the minor version installed on your system:
+1. Install `flake8` by typing the following in a terminal:
    ```
-   # For python 2.x
-   [sudo] pip-2.x install flake8
+   # For python2
+   [sudo] pip install flake8
 
-   # For python 3.x
-   [sudo] pip-3.x install flake8
+   # For python 3
+   [sudo] pip3 install flake8
    ```
 
 **Note:** This plugin requires `flake8` 2.1 or later.
