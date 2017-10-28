@@ -17,11 +17,12 @@ from SublimeLinter.lint import PythonLinter
 class Flake8(PythonLinter):
     """Provides an interface to the flake8 python module/script."""
 
-    syntax = 'python'
+    syntax = ('python', 'python3')
     cmd = ('flake8@python', '*', '-')
     version_args = '--version'
     version_re = r'^(?P<version>\d+\.\d+\.\d+)'
     version_requirement = '>= 2.2.2'
+    check_version = True
 
     # The following regex marks these pyflakes and pep8 codes as errors.
     # All other codes are marked as warnings.
@@ -40,12 +41,13 @@ class Flake8(PythonLinter):
     #  - E113 unexpected indentation
     #  - E901 SyntaxError or IndentationError
     #  - E902 IOError
+    #  - E999 SyntaxError
 
     regex = (
         r'^.+?:(?P<line>\d+):(?P<col>\d+): '
-        r'(?:(?P<error>(?:F(?:40[24]|8(?:12|2[123]|31))|E(?:11[23]|90[12])))|'
+        r'(?:(?P<error>(?:F(?:40[24]|8(?:12|2[123]|31))|E(?:11[23]|90[12]|999)))|'
         r'(?P<warning>\w\d+)) '
-        r'(?P<message>(?P<near>\'.+\') imported but unused|.*)'
+        r'(?P<message>\'(.*\.)?(?P<near>.+)\' imported but unused|.*)'
     )
     multiline = True
     defaults = {
@@ -61,6 +63,10 @@ class Flake8(PythonLinter):
     inline_settings = ('max-line-length', 'max-complexity')
     inline_overrides = ('select', 'ignore', 'builtins')
 
+    # ST will not show error marks in whitespace errors, so bump the column by one
+    # e.g. `E203 whitespace before ':'`
+    increment_col = ('E203',)
+
     def split_match(self, match):
         """
         Extract and return values from match.
@@ -74,6 +80,9 @@ class Flake8(PythonLinter):
 
         if near:
             col = None
+
+        if col and any(c in self.increment_col for c in (error, warning)):
+            col += 1
 
         if self.get_view_settings().get('show-code'):
             message = ' '.join([error or warning or '', message])
