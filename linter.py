@@ -18,6 +18,10 @@ from . import util
 
 
 class PythonLinter(Linter):
+    """New base for the Flake8 linter.
+
+    Supposed to work for other python linters as well.
+    """
     @classmethod
     @lru_cache(maxsize=None)
     def can_lint(cls, syntax):
@@ -38,7 +42,7 @@ class PythonLinter(Linter):
         return can
 
     def context_sensitive_executable_path(self, cmd):
-        """Try to find an executable for a given cmd"""
+        """Try to find an executable for a given cmd."""
 
         settings = self.get_view_settings()
 

@@ -1,3 +1,5 @@
+""" utilities. """
+
 from functools import lru_cache
 import os
 
@@ -26,6 +28,8 @@ def _find_executables(executable):
 
 @lru_cache(maxsize=None)
 def find_executable(executable):
+    """Return the full path to an executable searching PATH."""
+
     for path in _find_executables(executable):
         return path
 
@@ -33,6 +37,8 @@ def find_executable(executable):
 
 
 def find_python_version(version):  # type: Str
+    """Return python binaries on PATH matching a specific version."""
+
     requested_version = util.extract_major_minor_version(version)
     for python in _find_executables('python'):
         python_version = util.get_python_version(python)
@@ -44,10 +50,7 @@ def find_python_version(version):  # type: Str
 
 @lru_cache(maxsize=None)
 def find_script_by_python_version(script_name, version):
-    """
-    Given a version string for python and a script name, try to return a
-    full path to such a script if any.
-    """
+    """Return full path to a script, given just a python version."""
 
     # They can be multiple matching pythons. We try to find a python with
     # its complete environment, not just a symbolic link or so.
@@ -62,12 +65,8 @@ def find_script_by_python_version(script_name, version):
 
 @lru_cache(maxsize=None)
 def find_script_by_python_env(python_env_path, script):
-    """
-    Return full path to a script installed in a python environment.
+    """Return full path to a script, given a python environment base dir."""
 
-    `python_env_path` is the base path of a python installation or virtual
-    environment.
-    """
     posix = sublime.platform() in ('osx', 'linux')
 
     if posix:
@@ -83,6 +82,8 @@ def find_script_by_python_env(python_env_path, script):
 
 
 def expand_variables(string):
+    """Expand typically sublime variables in the given string."""
+
     window = sublime.active_window()
     env = window.extract_variables()
     return sublime.expand_variables(string, env)
