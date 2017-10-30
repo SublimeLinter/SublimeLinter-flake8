@@ -20,8 +20,9 @@ from . import util
 class PythonLinter(Linter):
     """New base for the Flake8 linter.
 
-    Supposed to work for other python linters as well.
+    Supposed to work for other python linters as well. But not yet.
     """
+
     @classmethod
     @lru_cache(maxsize=None)
     def can_lint(cls, syntax):

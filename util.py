@@ -1,4 +1,12 @@
-""" utilities. """
+#
+# util.py
+#
+# Copyright (c) 2015-2016 The SublimeLinter Community
+#
+# License: MIT
+#
+
+"""Utilities."""
 
 from functools import lru_cache
 import os
