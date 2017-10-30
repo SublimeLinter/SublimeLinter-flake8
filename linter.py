@@ -136,9 +136,20 @@ class PythonLinter(Linter):
                 )
                 return True, executable
 
-        # If we're here the user didn't specify anything. We do a simple
-        # `which` now. But I think we could do better. Maybe a `pyenv which`
-        # or `pipenv which`
+        # If we're here the user didn't specify anything. This is the default
+        # experience. So we kick in some 'magic'
+        chdir = self.get_chdir(settings)
+        executable = util.ask_pipenv(cmd[0], chdir)
+        if executable:
+            persist.printf(
+                "{}: Using {} according to 'pipenv'"
+                .format(self.name, executable)
+            )
+            return True, executable
+
+        # Should we try a `pyenv which` as well? Problem: I don't have it,
+        # it's MacOS only.
+
         persist.printf(
             "{}: trying to use globally installed {}"
             .format(self.name, cmd_name)

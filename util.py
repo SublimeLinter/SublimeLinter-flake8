@@ -10,6 +10,8 @@
 
 from functools import lru_cache
 import os
+import subprocess
+
 
 import sublime
 from SublimeLinter.lint import util, persist
@@ -90,11 +92,77 @@ def find_script_by_python_env(python_env_path, script):
 
 
 def expand_variables(string):
-    """Expand typically sublime variables in the given string."""
+    """Expand typical sublime variables in the given string."""
 
     window = sublime.active_window()
     env = window.extract_variables()
     return sublime.expand_variables(string, env)
+
+
+def get_project_path():
+    """Return the project_path using Sublime's window.project_data() API."""
+
+    window = sublime.active_window()
+    # window.project_data() is a relative new API.
+    # I don't know what we can expect from 'folders' here. Can we just take
+    # the first one, if any, and be happy?
+    project_data = window.project_data() or {}
+    folders = project_data.get('folders', [])
+    if folders:
+        return folders[0]['path']  # ?
+
+
+def ask_pipenv(linter_name, chdir):
+    """Ask pipenv for a virtual environment and maybe resolve the linter."""
+
+    # Some pre-checks bc `pipenv` is super slow
+    project_path = get_project_path()
+    if not project_path:
+        return
+
+    pipfile = os.path.join(project_path, 'Pipfile')
+    if not os.path.exists(pipfile):
+        return
+
+    # Defer the real work to another function we can cache.
+    # ATTENTION: If the user has a Pipfile, but did not (yet) installed the
+    # environment, we will cache a wrong result here.
+    return _ask_pipenv(linter_name, chdir)
+
+
+@lru_cache(maxsize=None)
+def _ask_pipenv(linter_name, chdir):
+    cmd = ['pipenv', '--venv']
+    with util.cd(chdir):
+        venv = _communicate(cmd).strip().split('\n')[-1]
+
+    if not venv:
+        return
+
+    return find_script_by_python_env(venv, linter_name)
+
+
+def _communicate(cmd):
+    """Short wrapper around subprocess.check_output to eat all errors."""
+
+    env = util.create_environment()
+    info = None
+
+    # On Windows, start process without a window
+    if os.name == 'nt':
+        info = subprocess.STARTUPINFO()
+        info.dwFlags |= subprocess.STARTF_USESTDHANDLES | subprocess.STARTF_USESHOWWINDOW
+        info.wShowWindow = subprocess.SW_HIDE
+
+    try:
+        return subprocess.check_output(
+            cmd, env=env, startupinfo=info, universal_newlines=True
+        )
+    except Exception as err:
+        persist.printf(
+            "executing {} failed: reason: {}".format(cmd, str(err))
+        )
+        return ''
 
 
 # re-export for convenience
