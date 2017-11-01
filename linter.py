@@ -201,9 +201,9 @@ class Flake8(PythonLinter):
         '--select=,': '',
         '--ignore=,': '',
         '--builtins=,': '',
-        '--max-line-length=': None,
-        '--max-complexity=': -1,
-        '--jobs=': '1',
+        '--max-line-length=': '',
+        '--max-complexity=': '',
+        '--jobs=': '',
         'show-code': False,
         'executable': ''
     }
