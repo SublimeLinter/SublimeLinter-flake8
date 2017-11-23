@@ -57,7 +57,7 @@ class PythonLinter(Linter):
         if executable:
             executable = util.expand_variables(executable)
 
-            persist.printf(
+            persist.debug(
                 "{}: wanted executable is '{}'".format(self.name, executable)
             )
 
@@ -83,7 +83,7 @@ class PythonLinter(Linter):
         if isinstance(python, str):
             python = util.expand_variables(python)
 
-        persist.printf(
+        persist.debug(
             "{}: wanted @python is '{}'".format(self.name, python)
         )
 
@@ -113,7 +113,7 @@ class PythonLinter(Linter):
                 # If we didn't find anything useful, use the legacy
                 # code from SublimeLinter for resolving that version.
                 if executable is None:
-                    persist.printf(
+                    persist.debug(
                         "{}: Still trying to resolve {}, now trying "
                         "SublimeLinter's legacy code."
                         .format(self.name, python)
@@ -130,7 +130,7 @@ class PythonLinter(Linter):
                     )
                     return True, None
 
-                persist.printf(
+                persist.debug(
                     "{}: Using {} for given @python '{}'"
                     .format(self.name, executable, python)
                 )
@@ -141,7 +141,7 @@ class PythonLinter(Linter):
         chdir = self.get_chdir(settings)
         executable = util.ask_pipenv(cmd[0], chdir)
         if executable:
-            persist.printf(
+            persist.debug(
                 "{}: Using {} according to 'pipenv'"
                 .format(self.name, executable)
             )
@@ -150,7 +150,7 @@ class PythonLinter(Linter):
         # Should we try a `pyenv which` as well? Problem: I don't have it,
         # it's MacOS only.
 
-        persist.printf(
+        persist.debug(
             "{}: trying to use globally installed {}"
             .format(self.name, cmd_name)
         )
