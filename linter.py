@@ -204,11 +204,12 @@ class Flake8(PythonLinter):
         '--max-line-length=': '',
         '--max-complexity=': '',
         '--jobs=': '',
+        '--config=': None,
         'show-code': False,
         'executable': ''
     }
     inline_settings = ('max-line-length', 'max-complexity')
-    inline_overrides = ('select', 'ignore', 'builtins')
+    inline_overrides = ('select', 'ignore', 'builtins', 'config')
 
     # ST will not show error marks in whitespace errors, so bump the column by one
     # e.g. `E203 whitespace before ':'`

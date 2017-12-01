@@ -52,6 +52,7 @@ In addition to the standard SublimeLinter settings, SublimeLinter-flake8 provide
 |max-line-length|The maximum allowed line length. `null` uses the PEP8 default of 79.|&#10003;| |
 |max-complexity|The maximum allowed code complexity. -1 allows unlimited complexity.|&#10003;| |
 |show-code|Displays the flake8 error code in the message, `False` by default.|&#10003;| |
+|config|Absolute path to any ini-style config file. `None` by default uses settings.| |&#10003;|
 
 ## Contributing
 If you would like to contribute enhancements or fixes, please do the following:
