@@ -159,7 +159,7 @@ def _communicate(cmd):
             cmd, env=env, startupinfo=info, universal_newlines=True
         )
     except Exception as err:
-        persist.printf(
+        persist.debug(
             "executing {} failed: reason: {}".format(cmd, str(err))
         )
         return ''
