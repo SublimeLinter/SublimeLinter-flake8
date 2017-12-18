@@ -23,6 +23,8 @@ class PythonLinter(Linter):
     Supposed to work for other python linters as well. But not yet.
     """
 
+    comment_re = r'\s*#'
+
     @classmethod
     @lru_cache(maxsize=None)
     def can_lint(cls, syntax):
