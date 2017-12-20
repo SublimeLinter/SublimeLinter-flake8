@@ -46,7 +46,6 @@ class PythonLinter(Linter):
 
     def context_sensitive_executable_path(self, cmd):
         """Try to find an executable for a given cmd."""
-
         settings = self.get_view_settings()
 
         # If the user explicitly set an executable, it takes precedence.
@@ -224,7 +223,6 @@ class Flake8(PythonLinter):
         and a column will always override near.
 
         """
-
         match, line, col, error, warning, message, near = super().split_match(match)
 
         if near:
