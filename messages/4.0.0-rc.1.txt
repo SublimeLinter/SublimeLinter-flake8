@@ -1,0 +1,6 @@
+SublimeLinter-flake8 4.0.0-rc.1
+-------------------------------
+
+Thank you for using the beta release of SublimeLinter-flake8!
+If you run into anything please report at:
+https://github.com/SublimeLinter/SublimeLinter3/issues
