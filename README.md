@@ -5,6 +5,20 @@ SublimeLinter-flake8
 
 This linter plugin for [SublimeLinter](http://sublimelinter.readthedocs.org) provides an interface to [flake8](http://flake8.readthedocs.org/en/latest/). It will be used with files that have the “Python” syntax.
 
+## SublimeLinter 4 beta
+
+We're making big improvements to how SublimeLinter works. You can read more about it [here](https://github.com/SublimeLinter/SublimeLinter3/blob/next/messages/4.0.0-rc.1.txt).
+
+Participate in the beta right now by editing your Package Control preferences and adding SublimeLinter and SublimeLinter-flake8 to the "install_prereleases" key:  
+```json
+"install_prereleases":
+[
+  "SublimeLinter",
+  "SublimeLinter-flake8"
+]
+```
+
+
 ## Installation
 SublimeLinter 3 must be installed in order to use this plugin. If SublimeLinter 3 is not installed, please follow the instructions [here](http://sublimelinter.readthedocs.org/en/latest/installation.html).
 
