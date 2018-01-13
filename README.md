@@ -7,7 +7,7 @@ This linter plugin for [SublimeLinter](https://github.com/SublimeLinter/SublimeL
 
 ## SublimeLinter 4 beta
 
-We're making big improvements to how SublimeLinter works. You can read more about it [here](https://raw.githubusercontent.com/SublimeLinter/SublimeLinter/master/messages/4.0.0-rc.1.txt).
+We're making big improvements to how SublimeLinter works. You can read more about it [here](https://github.com/SublimeLinter/SublimeLinter/blob/master/messages/4.0.0-rc.1.txt).
 
 Participate in the beta right now by editing your Package Control preferences and adding SublimeLinter and SublimeLinter-flake8 to the "install_prereleases" key:  
 ```json
