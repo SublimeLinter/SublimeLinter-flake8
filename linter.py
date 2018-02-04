@@ -13,6 +13,9 @@
 
 
 from SublimeLinter.lint import PythonLinter
+import re
+
+CAPTURE_WS = re.compile('(\s+)')
 
 
 class Flake8(PythonLinter):
@@ -70,5 +73,11 @@ class Flake8(PythonLinter):
             return (line, col, len(txt))
         if code.startswith('E1'):
             return (line, 0, col)
+        if code.startswith('E2'):
+            txt = virtual_view.select_line(line).rstrip('\n')
+            match = CAPTURE_WS.match(txt[col:])
+            if match is not None:
+                length = len(match.group(1))
+                return (line, col, col + length)
 
         return super().reposition_match(line, col, m, virtual_view)
