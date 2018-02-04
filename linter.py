@@ -62,3 +62,11 @@ class Flake8(PythonLinter):
             col = None
 
         return match, line, col, error, warning, message, near
+
+    def reposition_match(self, line, col, m, vv):
+        code = m.error or m.warning
+        if code == 'W291':
+            start, end = vv.full_line(line)
+            return (line, col, end - start - 1)
+
+        return super().reposition_match(line, col, m, vv)
