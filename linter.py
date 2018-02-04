@@ -68,5 +68,7 @@ class Flake8(PythonLinter):
         if code in ('W291', 'W293'):
             txt = virtual_view.select_line(line).rstrip('\n')
             return (line, col, len(txt))
+        if code.startswith('E1'):
+            return (line, 0, col)
 
         return super().reposition_match(line, col, m, virtual_view)
