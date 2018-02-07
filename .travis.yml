@@ -11,8 +11,6 @@ matrix:
 
 install:
   - pip install flake8
-  - pip install pydocstyle
 
 script:
   - flake8
-  - pydocstyle
