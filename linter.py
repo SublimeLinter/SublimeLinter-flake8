@@ -54,32 +54,7 @@ class Flake8(PythonLinter):
         '--max-line-length=': '',
         '--max-complexity=': '',
         '--jobs=': '',
-        'show-code': False,
         'executable': ''
     }
     inline_settings = ('max-line-length', 'max-complexity')
     inline_overrides = ('select', 'ignore', 'builtins')
-
-    # ST will not show error marks in whitespace errors, so bump the column by one
-    # e.g. `E203 whitespace before ':'`
-    increment_col = ('E203',)
-
-    def split_match(self, match):
-        """
-        Extract and return values from match.
-
-        We override this method because sometimes we capture near,
-        and a column will always override near.
-
-        """
-        match, line, col, error, warning, message, near = super().split_match(match)
-
-        if near:
-            col = None
-
-        if col and any(c in self.increment_col for c in (error, warning)):
-            col += 1
-
-        if self.get_view_settings().get('show-code'):
-            message = ' '.join([error or warning or '', message])
-        return match, line, col, error, warning, message, near
