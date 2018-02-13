@@ -56,5 +56,3 @@ class Flake8(PythonLinter):
         '--jobs=': '',
         'executable': ''
     }
-    inline_settings = ('max-line-length', 'max-complexity')
-    inline_overrides = ('select', 'ignore', 'builtins')
