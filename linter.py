@@ -47,6 +47,3 @@ class Flake8(PythonLinter):
         r'(?P<message>\'(.*\.)?(?P<near>.+)\' imported but unused|.*)'
     )
     multiline = True
-    defaults = {
-       'executable': ''
-    }
