@@ -67,23 +67,27 @@ class Flake8(PythonLinter):
         return match, line, col, error, warning, message, near
 
     def reposition_match(self, line, col, m, virtual_view):
+        """Reposition white-space errors."""
         code = m.error or m.warning
+
         if code in ('W291', 'W293'):
             txt = virtual_view.select_line(line).rstrip('\n')
             return (line, col, len(txt))
+
         if code.startswith('E1'):
             return (line, 0, col)
+
         if code.startswith('E2'):
             txt = virtual_view.select_line(line).rstrip('\n')
             match = CAPTURE_WS.match(txt[col:])
             if match is not None:
                 length = len(match.group(1))
                 return (line, col, col + length)
+
         if code == 'E303':
             match = re.match('E303 too many blank lines \((\d+)', m.message)
             if match is not None:
                 count = int(match.group(1))
-                print(count)
             return (line - (count - 1), 0, count - 1)
 
         return super().reposition_match(line, col, m, virtual_view)
