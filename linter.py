@@ -19,7 +19,7 @@ class Flake8(PythonLinter):
     """Provides an interface to the flake8 python module/script."""
 
     syntax = ('python', 'python3')
-    cmd = ('flake8', '--format', 'default', '*', '-')
+    cmd = ('flake8', '--format', 'default', '${args}', '-')
 
     # The following regex marks these pyflakes and pep8 codes as errors.
     # All other codes are marked as warnings.
