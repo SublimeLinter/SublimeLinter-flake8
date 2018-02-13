@@ -85,7 +85,7 @@ class Flake8(PythonLinter):
                 return (line, col, col + length)
 
         if code == 'E303':
-            match = re.match('E303 too many blank lines \((\d+)', m.message)
+            match = re.match('too many blank lines \((\d+)', m.message)
             if match is not None:
                 count = int(match.group(1))
                 return (line - (count - 1), 0, count - 1)
