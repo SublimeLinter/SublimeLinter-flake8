@@ -88,6 +88,6 @@ class Flake8(PythonLinter):
             match = re.match('E303 too many blank lines \((\d+)', m.message)
             if match is not None:
                 count = int(match.group(1))
-            return (line - (count - 1), 0, count - 1)
+                return (line - (count - 1), 0, count - 1)
 
         return super().reposition_match(line, col, m, virtual_view)
