@@ -47,3 +47,18 @@ class Flake8(PythonLinter):
         r'(?P<message>\'(.*\.)?(?P<near>.+)\' imported but unused|.*)'
     )
     multiline = True
+
+    def split_match(self, match):
+        """
+        Extract and return values from match.
+
+        We override this method because sometimes we capture near,
+        and a column will always override near.
+
+        """
+        match, line, col, error, warning, message, near = super().split_match(match)
+
+        if near:
+            col = None
+
+        return match, line, col, error, warning, message, near
