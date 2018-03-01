@@ -1,22 +1,7 @@
-#
-# linter.py
-# Linter for SublimeLinter3, a code checking framework for Sublime Text 3
-#
-# Written by Aparajita Fishman
-# Copyright (c) 2013-2014 Aparajita Fishman
-# Copyright (c) 2015-2016 The SublimeLinter Community
-#
-# License: MIT
-#
-
-"""This module exports the Flake8 plugin linter class."""
-
-
 from SublimeLinter.lint import PythonLinter
 
 
 class Flake8(PythonLinter):
-    """Provides an interface to the flake8 python module/script."""
 
     syntax = ('python', 'python3')
     cmd = ('flake8', '--format', 'default', '${args}', '-')
