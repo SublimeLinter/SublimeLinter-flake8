@@ -6,8 +6,10 @@ CAPTURE_WS = re.compile('(\s+)')
 
 class Flake8(PythonLinter):
 
-    syntax = ('python', 'python3')
     cmd = ('flake8', '--format', 'default', '${args}', '-')
+    defaults = {
+        'selector': 'source.python'
+    }
 
     # The following regex marks these pyflakes and pep8 codes as errors.
     # All other codes are marked as warnings.
