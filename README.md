@@ -26,7 +26,34 @@ Before installing this plugin, you must ensure that `flake8` is installed on you
 In order for `flake8` to be executed by SublimeLinter, you must ensure that its path is available to SublimeLinter. Before going any further, please read and follow the steps in [“Finding a linter executable”](http://sublimelinter.readthedocs.org/en/latest/troubleshooting.html#finding-a-linter-executable) through “Validating your PATH” in the documentation.
 
 ## Settings
+
+Flake8 configuration can passed in the project settings, via the `args` key:
+
+```
+{
+    "folders":
+    [
+        {
+            "path": "."
+        }
+    ],
+    "SublimeLinter":
+    {
+        "linters":
+        {
+            "flake8": {
+                "disable": true,
+                "args": [
+                    "--max-line-length=120",
+                    "--exclude=__pycache__,.direnv",
+                ],
+            }
+        }
+    }
+}
+```
+
 - SublimeLinter settings: http://sublimelinter.readthedocs.org/en/latest/settings.html
 - Linter settings: http://sublimelinter.readthedocs.org/en/latest/linter_settings.html
 
-SublimeLinter-flake8 works with common flake8 [configuration files](http://flake8.pycqa.org/en/latest/user/configuration.html#configuration-locations) and inline overrides.
+SublimeLinter-flake8 no longer refers to common flake8 configuration files.
