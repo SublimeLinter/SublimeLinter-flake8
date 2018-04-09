@@ -1,5 +1,9 @@
 from SublimeLinter.lint import PythonLinter
+import logging
 import re
+
+
+logger = logging.getLogger('SublimeLinter.plugin.flake8')
 
 CAPTURE_WS = re.compile('(\s+)')
 
@@ -37,6 +41,10 @@ class Flake8(PythonLinter):
         r'(?P<message>\'(.*\.)?(?P<near>.+)\' imported but unused|.*)'
     )
     multiline = True
+
+    def on_stderr(self, output):
+        logger.error(output)
+        self.notify_failure()
 
     def split_match(self, match):
         """
