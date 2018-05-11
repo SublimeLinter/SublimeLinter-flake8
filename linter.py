@@ -8,7 +8,9 @@ class Flake8(PythonLinter):
 
     cmd = ('flake8', '--format', 'default', '${args}', '-')
     defaults = {
-        'selector': 'source.python'
+        'selector': 'source.python',
+        # By default, filter codes Sublime can auto-fix
+        'filter-codes': ['W291', 'W293', 'W391']
     }
 
     # The following regex marks these pyflakes and pep8 codes as errors.
@@ -37,6 +39,16 @@ class Flake8(PythonLinter):
         r'(?P<message>\'(.*\.)?(?P<near>.+)\' imported but unused|.*)'
     )
     multiline = True
+
+    def parse_output(self, proc, virtual_view):
+        settings = self.get_view_settings()
+        filter_codes = settings.get('filter-codes', [])
+
+        return [
+            error
+            for error in super().parse_output(proc, virtual_view)
+            if error['code'] not in filter_codes
+        ]
 
     def split_match(self, match):
         """
