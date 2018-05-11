@@ -92,4 +92,10 @@ class Flake8(PythonLinter):
                 count = int(match.group(1))
                 return (line - (count - 1), 0, count - 1)
 
+        if code == 'E999':
+            txt = virtual_view.select_line(line).rstrip('\n')
+            last_col = len(txt)
+            if col + 1 == last_col:
+                return line, last_col, last_col
+
         return super().reposition_match(line, col, m, virtual_view)
