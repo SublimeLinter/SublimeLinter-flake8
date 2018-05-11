@@ -1,14 +1,16 @@
 from SublimeLinter.lint import PythonLinter
 import re
 
-CAPTURE_WS = re.compile('(\s+)')
+CAPTURE_WS = re.compile(r'(\s+)')
 
 
 class Flake8(PythonLinter):
 
     cmd = ('flake8', '--format', 'default', '${args}', '-')
     defaults = {
-        'selector': 'source.python'
+        'selector': 'source.python',
+        # By default, filter codes Sublime can auto-fix
+        'filter-codes': ['W291', 'W293']
     }
 
     # The following regex marks these pyflakes and pep8 codes as errors.
@@ -38,6 +40,16 @@ class Flake8(PythonLinter):
     )
     multiline = True
 
+    def parse_output(self, proc, virtual_view):
+        settings = self.get_view_settings()
+        filter_codes = settings.get('filter-codes', [])
+
+        return [
+            error
+            for error in super().parse_output(proc, virtual_view)
+            if error['code'] not in filter_codes
+        ]
+
     def split_match(self, match):
         """
         Extract and return values from match.
@@ -46,12 +58,12 @@ class Flake8(PythonLinter):
         and a column will always override near.
 
         """
-        match, line, col, error, warning, message, near = super().split_match(match)
+        match = super().split_match(match)
 
-        if near:
-            col = None
+        if match.near:
+            return match._replace(col=None)
 
-        return match, line, col, error, warning, message, near
+        return match
 
     def reposition_match(self, line, col, m, virtual_view):
         """Reposition white-space errors."""
@@ -75,9 +87,15 @@ class Flake8(PythonLinter):
             return line - 1, 0, 1
 
         if code == 'E303':
-            match = re.match('too many blank lines \((\d+)', m.message.strip())
+            match = re.match(r'too many blank lines \((\d+)', m.message.strip())
             if match is not None:
                 count = int(match.group(1))
                 return (line - (count - 1), 0, count - 1)
+
+        if code == 'E999':
+            txt = virtual_view.select_line(line).rstrip('\n')
+            last_col = len(txt)
+            if col + 1 == last_col:
+                return line, last_col, last_col
 
         return super().reposition_match(line, col, m, virtual_view)
