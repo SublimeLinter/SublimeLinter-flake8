@@ -1,7 +1,7 @@
 from SublimeLinter.lint import PythonLinter
 import re
 
-CAPTURE_WS = re.compile('(\s+)')
+CAPTURE_WS = re.compile(r'(\s+)')
 
 
 class Flake8(PythonLinter):
@@ -75,7 +75,7 @@ class Flake8(PythonLinter):
             return line - 1, 0, 1
 
         if code == 'E303':
-            match = re.match('too many blank lines \((\d+)', m.message.strip())
+            match = re.match(r'too many blank lines \((\d+)', m.message.strip())
             if match is not None:
                 count = int(match.group(1))
                 return (line - (count - 1), 0, count - 1)
