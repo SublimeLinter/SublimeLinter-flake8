@@ -46,12 +46,12 @@ class Flake8(PythonLinter):
         and a column will always override near.
 
         """
-        match, line, col, error, warning, message, near = super().split_match(match)
+        match = super().split_match(match)
 
-        if near:
-            col = None
+        if match.near:
+            return match._replace(col=None)
 
-        return match, line, col, error, warning, message, near
+        return match
 
     def reposition_match(self, line, col, m, virtual_view):
         """Reposition white-space errors."""
