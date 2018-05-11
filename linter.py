@@ -10,7 +10,7 @@ class Flake8(PythonLinter):
     defaults = {
         'selector': 'source.python',
         # By default, filter codes Sublime can auto-fix
-        'filter-codes': ['W291', 'W293', 'W391']
+        'filter-codes': ['W291', 'W293']
     }
 
     # The following regex marks these pyflakes and pep8 codes as errors.
