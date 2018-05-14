@@ -1,7 +1,7 @@
 from SublimeLinter.lint import PythonLinter
 import re
 
-CAPTURE_WS = re.compile('(\s+)')
+CAPTURE_WS = re.compile(r'(\s+)')
 
 
 class Flake8(PythonLinter):
@@ -46,12 +46,12 @@ class Flake8(PythonLinter):
         and a column will always override near.
 
         """
-        match, line, col, error, warning, message, near = super().split_match(match)
+        match = super().split_match(match)
 
-        if near:
-            col = None
+        if match.near:
+            return match._replace(col=None)
 
-        return match, line, col, error, warning, message, near
+        return match
 
     def reposition_match(self, line, col, m, virtual_view):
         """Reposition white-space errors."""
@@ -75,9 +75,15 @@ class Flake8(PythonLinter):
             return line - 1, 0, 1
 
         if code == 'E303':
-            match = re.match('too many blank lines \((\d+)', m.message.strip())
+            match = re.match(r'too many blank lines \((\d+)', m.message.strip())
             if match is not None:
                 count = int(match.group(1))
                 return (line - (count - 1), 0, count - 1)
+
+        if code == 'E999':
+            txt = virtual_view.select_line(line).rstrip('\n')
+            last_col = len(txt)
+            if col + 1 == last_col:
+                return line, last_col, last_col
 
         return super().reposition_match(line, col, m, virtual_view)
