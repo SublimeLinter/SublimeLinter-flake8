@@ -49,13 +49,23 @@ class Flake8(PythonLinter):
         if not settings.get('ignore-fixables', False):
             return errors
 
+        trims_ws = self.view.settings().get('trim_trailing_white_space_on_save')
+        ensures_newline = self.view.settings().get('ensure_newline_at_eof_on_save')
+
+        if not (trims_ws or ensures_newline):
+            return errors
+
         filtered_errors = []
         for error in errors:
             code = error['code']
-            if code in ('W291', 'W293'):  # no 'trailing' WS errors
+
+            if ensures_newline and code == 'W292':
                 continue
 
-            if code == 'W391':
+            if trims_ws and code in ('W291', 'W293'):
+                continue
+
+            if trims_ws and code == 'W391':
                 # Fixable if one WS line is at EOF, except the view only has
                 # one line.
                 lines = len(virtual_view._newlines) - 1
