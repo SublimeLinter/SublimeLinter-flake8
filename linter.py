@@ -11,8 +11,9 @@ class Flake8(PythonLinter):
     cmd = ('flake8', '--format', 'default', '${args}', '-')
     defaults = {
         'selector': 'source.python',
-        # By default, filter codes Sublime can auto-fix
-        'ignore-fixables': True
+
+        # Filter codes Sublime can auto-fix
+        'ignore_fixables': True
     }
 
     # The following regex marks these pyflakes and pep8 codes as errors.
@@ -46,7 +47,7 @@ class Flake8(PythonLinter):
         settings = self.get_view_settings()
         errors = super().parse_output(proc, virtual_view)
 
-        if not settings.get('ignore-fixables', False):
+        if not settings.get('ignore_fixables', False):
             return errors
 
         trims_ws = self.view.settings().get('trim_trailing_white_space_on_save')
