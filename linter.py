@@ -1,7 +1,9 @@
 from SublimeLinter.lint import PythonLinter
 import re
 
+
 CAPTURE_WS = re.compile(r'(\s+)')
+CAPTURE_IMPORT_ID = re.compile(r'^\'(?:.*\.)?(.+)\'')
 
 
 class Flake8(PythonLinter):
@@ -34,7 +36,7 @@ class Flake8(PythonLinter):
         r'^.+?:(?P<line>\d+):(?P<col>\d+): '
         r'(?:(?P<error>(?:F(?:40[24]|8(?:12|2[123]|31))|E(?:11[23]|90[12]|999)))|'
         r'(?P<warning>\w\d+)) '
-        r'(?P<message>\'(.*\.)?(?P<near>.+)\' imported but unused|.*)'
+        r'(?P<message>.*)'
     )
     multiline = True
 
@@ -72,27 +74,29 @@ class Flake8(PythonLinter):
                 return line, last_col, last_col
 
         if code == 'F401':
-            # `near` contains the imported identifier.
+            # Typical message from flake is "'x.y.z' imported but unused"
+            # The import_id will be 'z' in that case.
             # Since, it is usual to spread imports on multiple lines, we
-            # search MAX_LINES for `near` starting with the reported line.
+            # search MAX_LINES for `import_id` starting with the reported line.
             MAX_LINES = 10
-            near = m.near
-            pattern = re.compile(r'\b({})\b'.format(near))
-            last_line = len(virtual_view._newlines) - 1
+            match = CAPTURE_IMPORT_ID.search(m.message)
+            if match:
+                import_id = match.group(1)
 
-            for _line in range(line, min(line + MAX_LINES, last_line)):
-                txt = virtual_view.select_line(_line)
+                pattern = re.compile(r'\b({})\b'.format(import_id))
+                last_line = len(virtual_view._newlines) - 1
 
-                # Take the right most match, to count for
-                # 'from util import util'
-                matches = list(pattern.finditer(txt))
-                if matches:
-                    match = matches[-1]
-                    return _line, match.start(1), match.end(1)
+                for _line in range(line, min(line + MAX_LINES, last_line)):
+                    txt = virtual_view.select_line(_line)
 
-            # Fallback, but since `near` did not match, setting both to None
-            # gives the desired result.
-            m = m._replace(near=None)
+                    # Take the right most match, to count for
+                    # 'from util import util'
+                    matches = list(pattern.finditer(txt))
+                    if matches:
+                        match = matches[-1]
+                        return _line, match.start(1), match.end(1)
+
+            # Fallback, and mark the line.
             col = None
 
         return super().reposition_match(line, col, m, virtual_view)
