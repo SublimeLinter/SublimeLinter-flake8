@@ -38,21 +38,6 @@ class Flake8(PythonLinter):
     )
     multiline = True
 
-    def split_match(self, match):
-        """
-        Extract and return values from match.
-
-        We override this method because sometimes we capture near,
-        and a column will always override near.
-
-        """
-        match = super().split_match(match)
-
-        if match.near:
-            return match._replace(col=None)
-
-        return match
-
     def reposition_match(self, line, col, m, virtual_view):
         """Reposition white-space errors."""
         code = m.error or m.warning
@@ -85,5 +70,29 @@ class Flake8(PythonLinter):
             last_col = len(txt)
             if col + 1 == last_col:
                 return line, last_col, last_col
+
+        if code == 'F401':
+            # `near` contains the imported identifier.
+            # Since, it is usual to spread imports on multiple lines, we
+            # search MAX_LINES for `near` starting with the reported line.
+            MAX_LINES = 10
+            near = m.near
+            pattern = re.compile(r'\b({})\b'.format(near))
+            last_line = len(virtual_view._newlines) - 1
+
+            for _line in range(line, min(line + MAX_LINES, last_line)):
+                txt = virtual_view.select_line(_line)
+
+                # Take the right most match, to count for
+                # 'from util import util'
+                matches = list(pattern.finditer(txt))
+                if matches:
+                    match = matches[-1]
+                    return _line, match.start(1), match.end(1)
+
+            # Fallback, but since `near` did not match, setting both to None
+            # gives the desired result.
+            m = m._replace(near=None)
+            col = None
 
         return super().reposition_match(line, col, m, virtual_view)
