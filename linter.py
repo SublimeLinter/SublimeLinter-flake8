@@ -1,7 +1,9 @@
 from SublimeLinter.lint import PythonLinter
 import re
 
+
 CAPTURE_WS = re.compile(r'(\s+)')
+CAPTURE_IMPORT_ID = re.compile(r'^\'(?:.*\.)?(.+)\'')
 
 
 class Flake8(PythonLinter):
@@ -34,24 +36,9 @@ class Flake8(PythonLinter):
         r'^.+?:(?P<line>\d+):(?P<col>\d+): '
         r'(?:(?P<error>(?:F(?:40[24]|8(?:12|2[123]|31))|E(?:11[23]|90[12]|999)))|'
         r'(?P<warning>\w\d+)) '
-        r'(?P<message>\'(.*\.)?(?P<near>.+)\' imported but unused|.*)'
+        r'(?P<message>.*)'
     )
     multiline = True
-
-    def split_match(self, match):
-        """
-        Extract and return values from match.
-
-        We override this method because sometimes we capture near,
-        and a column will always override near.
-
-        """
-        match = super().split_match(match)
-
-        if match.near:
-            return match._replace(col=None)
-
-        return match
 
     def reposition_match(self, line, col, m, virtual_view):
         """Reposition white-space errors."""
@@ -85,5 +72,31 @@ class Flake8(PythonLinter):
             last_col = len(txt)
             if col + 1 == last_col:
                 return line, last_col, last_col
+
+        if code == 'F401':
+            # Typical message from flake is "'x.y.z' imported but unused"
+            # The import_id will be 'z' in that case.
+            # Since, it is usual to spread imports on multiple lines, we
+            # search MAX_LINES for `import_id` starting with the reported line.
+            MAX_LINES = 10
+            match = CAPTURE_IMPORT_ID.search(m.message)
+            if match:
+                import_id = match.group(1)
+
+                pattern = re.compile(r'\b({})\b'.format(import_id))
+                last_line = len(virtual_view._newlines) - 1
+
+                for _line in range(line, min(line + MAX_LINES, last_line)):
+                    txt = virtual_view.select_line(_line)
+
+                    # Take the right most match, to count for
+                    # 'from util import util'
+                    matches = list(pattern.finditer(txt))
+                    if matches:
+                        match = matches[-1]
+                        return _line, match.start(1), match.end(1)
+
+            # Fallback, and mark the line.
+            col = None
 
         return super().reposition_match(line, col, m, virtual_view)
