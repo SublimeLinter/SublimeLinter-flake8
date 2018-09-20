@@ -12,7 +12,7 @@ class Flake8(PythonLinter):
     defaults = {
         'selector': 'source.python',
 
-        # Filter codes Sublime can auto-fix
+        # Ignore codes Sublime can auto-fix
         'ignore_fixables': True
     }
 
