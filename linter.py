@@ -1,5 +1,9 @@
+import logging
 from SublimeLinter.lint import PythonLinter
 import re
+
+
+logger = logging.getLogger('SublimeLinter.plugins.flake8')
 
 
 CAPTURE_WS = re.compile(r'(\s+)')
@@ -42,6 +46,15 @@ class Flake8(PythonLinter):
         r'(?P<message>.*)'
     )
     multiline = True
+
+    def on_stderr(self, stderr):
+        stderr = re.sub(r'^.+FutureWarning.+\n', '', stderr, re.M)
+        stderr = re.sub(r'^.+DeprecationWarning.+\n', '', stderr, re.M)
+        stderr = re.sub(r'^.+EXTRANEOUS_WHITESPACE_REGEX = re.compile.+\n', '', stderr, re.M)
+
+        if stderr:
+            self.notify_failure()
+            logger.error(stderr)
 
     def parse_output(self, proc, virtual_view):
         settings = self.get_view_settings()
