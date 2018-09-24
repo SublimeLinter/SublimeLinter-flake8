@@ -84,8 +84,11 @@ class Flake8(PythonLinter):
                 # one line.
                 lines = len(virtual_view._newlines) - 1
                 if (
-                    virtual_view.select_line(lines - 1).strip() == '' and
-                    (lines < 2 or virtual_view.select_line(lines - 2).strip() != '')
+                    virtual_view.select_line(lines - 1).strip() == ''
+                    and (
+                        lines < 2
+                        or virtual_view.select_line(lines - 2).strip() != ''
+                    )
                 ):
                     continue
 
