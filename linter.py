@@ -1,5 +1,9 @@
+import logging
 from SublimeLinter.lint import PythonLinter
 import re
+
+
+logger = logging.getLogger('SublimeLinter.plugins.flake8')
 
 
 CAPTURE_WS = re.compile(r'(\s+)')
@@ -10,7 +14,10 @@ class Flake8(PythonLinter):
 
     cmd = ('flake8', '--format', 'default', '${args}', '-')
     defaults = {
-        'selector': 'source.python'
+        'selector': 'source.python',
+
+        # Ignore codes Sublime can auto-fix
+        'ignore_fixables': True
     }
 
     # The following regex marks these pyflakes and pep8 codes as errors.
@@ -39,6 +46,58 @@ class Flake8(PythonLinter):
         r'(?P<message>.*)'
     )
     multiline = True
+
+    def on_stderr(self, stderr):
+        # For python 3.7 we actually have the case that flake yields
+        # FutureWarnings. We just eat those as they're irrelevant here. Note
+        # that we try to eat the subsequent line as well which usually contains
+        # the culprit source line.
+        stderr = re.sub(r'^.+FutureWarning.+\n(.*\n?)?', '', stderr, re.M)
+        stderr = re.sub(r'^.+DeprecationWarning.+\n(.*\n?)?', '', stderr, re.M)
+
+        if stderr:
+            self.notify_failure()
+            logger.error(stderr)
+
+    def parse_output(self, proc, virtual_view):
+        settings = self.get_view_settings()
+        errors = super().parse_output(proc, virtual_view)
+
+        if not settings.get('ignore_fixables', True):
+            return errors
+
+        trims_ws = self.view.settings().get('trim_trailing_white_space_on_save')
+        ensures_newline = self.view.settings().get('ensure_newline_at_eof_on_save')
+
+        if not (trims_ws or ensures_newline):
+            return errors
+
+        filtered_errors = []
+        for error in errors:
+            code = error['code']
+
+            if ensures_newline and code == 'W292':
+                continue
+
+            if trims_ws and code in ('W291', 'W293'):
+                continue
+
+            if trims_ws and code == 'W391':
+                # Fixable if one WS line is at EOF, except the view only has
+                # one line.
+                lines = len(virtual_view._newlines) - 1
+                if (
+                    virtual_view.select_line(lines - 1).strip() == ''
+                    and (
+                        lines < 2
+                        or virtual_view.select_line(lines - 2).strip() != ''
+                    )
+                ):
+                    continue
+
+            filtered_errors.append(error)
+
+        return filtered_errors
 
     def reposition_match(self, line, col, m, virtual_view):
         """Reposition white-space errors."""

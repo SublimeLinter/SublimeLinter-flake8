@@ -1,0 +1,24 @@
+SublimeLinter-flake8 4.2.0
+--------------------------
+
+Less noise, hide problems that can be fixed automatically!
+
+Sublime has a basic code formatter built in. E.g. it will remove trailing white-space on save. (The related Sublime settings here are "trim_trailing_white_space_on_save" and "ensure_newline_at_eof_on_save".) 
+
+Starting with this release, we will filter (hide) these errors automatically. We introduce a new setting "ignore_fixables" (True by default) which controls this behavior.
+
+Maybe you already know black, the new, zero-config code formatter for python. And in case you use it, you may have noticed that flake8 now produces a lot of noise which black can fix for you. There is an addon https://packagecontrol.io/packages/SublimeLinter-addon-black-for-flake which will automatically filter all warnings black can fix. Try it!
+
+
+Notable enhancement: Mark unused imported identifiers correct. E.g. in the following code, 
+
+    from x import (
+        x,
+        y,
+        z
+    )
+
+we now correctly highlight x, y, and z.
+
+Fix: Tighten compatibility with python 3.7
+
