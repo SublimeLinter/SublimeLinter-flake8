@@ -19,3 +19,6 @@ Notable enhancement: Mark unused imported identifiers correct. E.g. in the follo
     )
 
 we now correctly highlight x, y, and z.
+
+Fix: Tighten compatibility with python 3.7
+
