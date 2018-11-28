@@ -8,6 +8,7 @@ logger = logging.getLogger('SublimeLinter.plugins.flake8')
 
 CAPTURE_WS = re.compile(r'(\s+)')
 CAPTURE_IMPORT_ID = re.compile(r'^\'(?:.*\.)?(.+)\'')
+CAPTURE_F403_HINT = re.compile(r"'(.*)?'")
 
 
 class Flake8(PythonLinter):
@@ -160,5 +161,14 @@ class Flake8(PythonLinter):
 
             # Fallback, and mark the line.
             col = None
+
+        if code == 'F403':
+            txt = virtual_view.select_line(line).rstrip('\n')
+            match = CAPTURE_F403_HINT.search(m.message)
+            if match:
+                hint = match.group(1)
+                start = txt.find(hint)
+                if start >= 0:
+                    return line, start + len(hint) - 1, start + len(hint)
 
         return super().reposition_match(line, col, m, virtual_view)
