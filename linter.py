@@ -142,9 +142,12 @@ class Flake8(PythonLinter):
             if match:
                 import_id = match.group(1)
 
-                pattern = re.compile(r'\b({})\b'.format(import_id))
-                last_line = len(virtual_view._newlines) - 1
+                if import_id == '*':
+                    pattern = re.compile(r'(\*)')
+                else:
+                    pattern = re.compile(r'\b({})\b'.format(re.escape(import_id)))
 
+                last_line = len(virtual_view._newlines) - 1
                 for _line in range(line, min(line + MAX_LINES, last_line)):
                     txt = virtual_view.select_line(_line)
 
