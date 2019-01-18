@@ -118,7 +118,7 @@ class Flake8(PythonLinter):
                 length = len(match.group(1))
                 return (line, col, col + length)
 
-        if code == 'E302':
+        if code in ('E302', 'E305'):
             return line - 1, 0, 1
 
         if code == 'E303':
