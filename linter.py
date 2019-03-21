@@ -84,8 +84,7 @@ class Flake8(PythonLinter):
                 continue
 
             if trims_ws and code == 'W391':
-                # Fixable if one WS line is at EOF, except the view only has
-                # one line.
+                # Fixable if one WS line at EOF, or the view only has one line.
                 lines = len(virtual_view._newlines) - 1
                 if (
                     virtual_view.select_line(lines - 1).strip() == ''
