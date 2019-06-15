@@ -13,7 +13,11 @@ CAPTURE_F403_HINT = re.compile(r"'(.*)?'")
 
 class Flake8(PythonLinter):
 
-    cmd = ('flake8', '--format', 'default', '${args}', '-')
+    cmd = (
+        'flake8',
+        '--format', 'default',
+        '--stdin-display-name', '${file}',
+        '${args}', '-')
     defaults = {
         'selector': 'source.python',
 
