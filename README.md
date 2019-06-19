@@ -34,3 +34,6 @@ SublimeLinter-flake8 works with common flake8 [configuration files](http://flake
 
 Use ["args"](http://www.sublimelinter.com/en/latest/linter_settings.html#args) if you want to set some arguments just like on the command line.
 
+## Compatibility with flake8 Plugins
+
+SublimeLinter-flake8 is compatible with most flake8 plugins out of the box. However, some plugins, such as [flake8-aaa](https://github.com/jamescooke/flake8-aaa) and [flake8-pyi](https://github.com/ambv/flake8-pyi), select or ignore certain files based on filenames. During linting runs in SublimeLinter-flake8, these filenames are not available to flake8 and its plugins, and these plugins may appear to be "broken". A workaround for flake8 v3.0.0 and higher is to add `"--stdin-display-name ${file}"` to the ["args"](http://www.sublimelinter.com/en/latest/linter_settings.html#args) setting.
