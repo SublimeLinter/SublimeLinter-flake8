@@ -61,10 +61,9 @@ class Flake8(PythonLinter):
             logger.error(stderr)
 
     def parse_output(self, proc, virtual_view):
-        settings = self.get_view_settings()
         errors = super().parse_output(proc, virtual_view)
 
-        if not settings.get('ignore_fixables', True):
+        if not self.settings.get('ignore_fixables', True):
             return errors
 
         trims_ws = self.view.settings().get('trim_trailing_white_space_on_save')
