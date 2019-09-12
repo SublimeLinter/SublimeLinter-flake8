@@ -28,7 +28,7 @@ If you use pipenv, and you're working on a project with a Pipfile, everything sh
 
 Additional settings:
 
-- `ignore_fixables` (Default: `True`): Filter warnings that Sublime can fix automatically (e.g. trailing white-space) on save.
+- `ignore_fixables` (default: `True`): filter warnings that Sublime can fix automatically (e.g. trailing white-space) on save.
 
 SublimeLinter-flake8 works with common flake8 [configuration files](http://flake8.pycqa.org/en/latest/user/configuration.html#configuration-locations) and inline overrides. Note that by default the [working dir](http://www.sublimelinter.com/en/latest/linter_settings.html#working-dir) is set to an open folder attached to the current window of Sublime. Edit this setting if your config files are located in a subfolder, for example.
 
