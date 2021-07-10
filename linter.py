@@ -136,7 +136,7 @@ class Flake8(PythonLinter):
             # The import_id will be 'z' in that case.
             # Since, it is usual to spread imports on multiple lines, we
             # search MAX_LINES for `import_id` starting with the reported line.
-            MAX_LINES = 10
+            MAX_LINES = 30
             match = CAPTURE_IMPORT_ID.search(m.message)
             if match:
                 import_id = match.group(1)
