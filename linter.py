@@ -102,7 +102,7 @@ class Flake8(PythonLinter):
         """Reposition white-space errors."""
         code = m.error or m.warning
 
-        if code in ('W291', 'W293'):
+        if code in ('W291', 'W293', 'E501'):
             txt = virtual_view.select_line(line).rstrip('\n')
             return (line, col, len(txt))
 
