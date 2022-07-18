@@ -109,6 +109,19 @@ class Flake8(PythonLinter):
         if code.startswith('E1'):
             return (line, 0, col)
 
+        if code in ('E262', 'E265'):
+            txt = virtual_view.select_line(line).rstrip('\n')
+            match = CAPTURE_WS.match(txt[col + 1:])
+            if match is not None:
+                length = len(match.group(1))
+                return (line, col, col + length + 1)
+
+        if code.startswith('E266'):
+            txt = virtual_view.select_line(line).rstrip('\n')
+            tail_text = txt[col:]
+            count_comment_sign = len(tail_text) - len(tail_text.lstrip("#"))
+            return (line, col, col + count_comment_sign)
+
         if code.startswith('E2'):
             txt = virtual_view.select_line(line).rstrip('\n')
             match = CAPTURE_WS.match(txt[col:])
