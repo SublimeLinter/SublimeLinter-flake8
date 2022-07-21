@@ -1,5 +1,5 @@
 SublimeLinter-flake8
-=========================
+====================
 
 [![Build Status](https://travis-ci.org/SublimeLinter/SublimeLinter-flake8.svg?branch=master)](https://travis-ci.org/SublimeLinter/SublimeLinter-flake8)
 
