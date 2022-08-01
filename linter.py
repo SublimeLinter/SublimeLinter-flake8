@@ -13,12 +13,12 @@ CAPTURE_F403_HINT = re.compile(r"'(.*)?'")
 
 class Flake8(PythonLinter):
 
-    cmd = ('flake8', '--format', 'default', '${args}', '-')
     defaults = {
         'selector': 'source.python',
 
         # Ignore codes Sublime can auto-fix
-        'ignore_fixables': True
+        'ignore_fixables': True,
+        'check_project_on_save': True,
     }
 
     # The following regex marks these pyflakes and pep8 codes as errors.
@@ -41,12 +41,23 @@ class Flake8(PythonLinter):
     #  - E999 SyntaxError
 
     regex = (
-        r'^.+?:(?P<line>\d+):(?P<col>\d+): '
+        r'^(?P<filename>(?::\\|[^:])+):(?P<line>\d+):(?P<col>\d+): '
         r'(?:(?P<error>(?:F(?:40[24]|8(?:12|2[123]|31))|E(?:11[23]|90[12]|999)))|'
         r'(?P<warning>\w+\d+):?) '
         r'(?P<message>.*)'
     )
     multiline = True
+
+    def cmd(self):
+        if (
+            self.settings.get('check_project_on_save')
+            and self.context.get('reason') in ('on_user_request', 'on_save')
+            and self.context.get('file')
+        ):
+            self.tempfile_suffix = '-'
+            return ('flake8', '--format', 'default', '${args}', '${xoo:.}')
+        else:
+            return ('flake8', '--format', 'default', '${args}', '-')
 
     def on_stderr(self, stderr):
         # For python 3.7 we actually have the case that flake yields
