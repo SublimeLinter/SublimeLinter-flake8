@@ -136,7 +136,15 @@ class Flake8(PythonLinter):
             match = re.match(r'too many blank lines \((\d+)', m.message.strip())
             if match is not None:
                 count = int(match.group(1))
-                return (line - (count - 1), 0, count - 1)
+                starting_line = line - count
+                return (
+                    starting_line,
+                    0,
+                    sum(
+                        len(virtual_view.select_line(_line))
+                        for _line in range(starting_line, line)
+                    )
+                )
 
         if code == 'E999':
             txt = virtual_view.select_line(line).rstrip('\n')
