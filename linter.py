@@ -11,6 +11,29 @@ CAPTURE_IMPORT_ID = re.compile(r'^\'(?:.*\.)?(.+)\'')
 CAPTURE_F403_HINT = re.compile(r"'(.*)?'")
 
 
+# Following codes are marked as errors.  All other codes are marked as warnings.
+error_codes = {
+    line.split(' ', 1)[0]
+    for line in (
+        # Pyflake Errors:
+        'F402 import module from line N shadowed by loop variable',
+        'F404 future import(s) name after other statements',
+        'F812 list comprehension redefines name from line N',
+        'F823 local variable name ... referenced before assignment',
+        'F831 duplicate argument name in function definition',
+        'F821 undefined name name',
+        'F822 undefined name name in __all__',
+
+        # Pep8 Errors:
+        'E112 expected an indented block',
+        'E113 unexpected indentation',
+        'E901 SyntaxError or IndentationError',
+        'E902 IOError',
+        'E999 SyntaxError',
+    )
+}
+
+
 class Flake8(PythonLinter):
 
     cmd = ('flake8', '--format', 'default', '${args}', '-')
@@ -21,32 +44,13 @@ class Flake8(PythonLinter):
         'ignore_fixables': True
     }
 
-    # The following regex marks these pyflakes and pep8 codes as errors.
-    # All other codes are marked as warnings.
-    #
-    # Pyflake Errors:
-    #  - F402 import module from line N shadowed by loop variable
-    #  - F404 future import(s) name after other statements
-    #  - F812 list comprehension redefines name from line N
-    #  - F823 local variable name ... referenced before assignment
-    #  - F831 duplicate argument name in function definition
-    #  - F821 undefined name name
-    #  - F822 undefined name name in __all__
-    #
-    # Pep8 Errors:
-    #  - E112 expected an indented block
-    #  - E113 unexpected indentation
-    #  - E901 SyntaxError or IndentationError
-    #  - E902 IOError
-    #  - E999 SyntaxError
-
     regex = (
         r'^.+?:(?P<line>\d+):(?P<col>\d+): '
-        r'(?:(?P<error>(?:F(?:40[24]|8(?:12|2[123]|31))|E(?:11[23]|90[12]|999)))|'
-        r'(?P<warning>\w+\d+):?) '
+        r'(?P<code>\w+\d+):? '
         r'(?P<message>.*)'
     )
     multiline = True
+    default_type = 'warning'
 
     def on_stderr(self, stderr):
         # For python 3.7 we actually have the case that flake yields
@@ -59,6 +63,12 @@ class Flake8(PythonLinter):
         if stderr:
             self.notify_failure()
             logger.error(stderr)
+
+    def split_match(self, match):
+        error = super().split_match(match)
+        if error['code'] in error_codes:
+            error['error_type'] = 'error'
+        return error
 
     def parse_output(self, proc, virtual_view):
         errors = super().parse_output(proc, virtual_view)
@@ -100,7 +110,7 @@ class Flake8(PythonLinter):
 
     def reposition_match(self, line, col, m, virtual_view):
         """Reposition white-space errors."""
-        code = m.error or m.warning
+        code = m.code
 
         if code in ('W291', 'W293', 'E501'):
             txt = virtual_view.select_line(line).rstrip('\n')
