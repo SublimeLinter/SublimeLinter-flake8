@@ -57,8 +57,8 @@ class Flake8(PythonLinter):
         # FutureWarnings. We just eat those as they're irrelevant here. Note
         # that we try to eat the subsequent line as well which usually contains
         # the culprit source line.
-        stderr = re.sub(r'^.+FutureWarning.+\n(.*\n?)?', '', stderr, re.M)
-        stderr = re.sub(r'^.+DeprecationWarning.+\n(.*\n?)?', '', stderr, re.M)
+        stderr = re.sub(r'^.+FutureWarning.+\n(.*\n?)?', '', stderr, flags=re.M)
+        stderr = re.sub(r'^.+DeprecationWarning.+\n(.*\n?)?', '', stderr, flags=re.M)
 
         if stderr:
             self.notify_failure()
