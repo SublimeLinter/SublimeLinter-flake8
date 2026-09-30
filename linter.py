@@ -108,6 +108,12 @@ class Flake8(PythonLinter):
 
         return filtered_errors
 
+    def convert_column(self, line, col, m, vv):
+        # Pyflakes' AST positions are bytes; pycodestyle positions are characters.
+        if m.code.startswith('F'):
+            return vv.col_from_utf8(line, col)
+        return super().convert_column(line, col, m, vv)
+
     def reposition_match(self, line, col, m, virtual_view):
         """Reposition white-space errors."""
         code = m.code
